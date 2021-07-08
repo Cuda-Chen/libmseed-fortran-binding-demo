@@ -11,13 +11,13 @@ print_stderr (const char *message)
 
 int
 pack_miniseed (void *data, const char *station_id,
-               int recore_length, uint8_t encoding,
+               int record_length, uint8_t encoding,
                int byteorder, uint8_t pubversion,
-               const char *starttime, double samplig_rate,
+               const char *starttime, double sampling_rate,
                int num_samples, const char *outfile)
 {
   MS3Record *msr = NULL;
-  char *cdata = NULL;
+  char *cdata    = NULL;
   float *fdata   = NULL;
   double *ddata  = NULL;
   int32_t *idata = NULL;
@@ -37,15 +37,20 @@ pack_miniseed (void *data, const char *station_id,
 
   /* Set up record metadata */
   strcpy (msr->sid, station_id);
-  msr->reclen     = recore_length;
+  msr->reclen     = record_length;
   msr->pubversion = pubversion;
   msr->starttime  = ms_timestr2nstime (starttime);
-  msr->samprate   = samplig_rate;
+  msr->samprate   = sampling_rate;
   msr->encoding   = encoding;
+  if ((ms_encoding_sizetype (encoding, &samplesize, NULL)) != 0)
+  {
+    ms_log (2, "Unrecognized encoding: '%d'\n", encoding);
+    return 1;
+  }
 
   if (encoding == DE_ASCII)
   {
-    msr->numsamples  = strlen ((const char *)data);
+    msr->numsamples = strlen ((const char *)data);
 
     if (!(cdata = (char *)malloc (msr->numsamples * sizeof (char))))
     {
@@ -97,7 +102,7 @@ pack_miniseed (void *data, const char *station_id,
   }
   else if (encoding == DE_INT16)
   {
-    msr->numsamples  = num_samples;
+    msr->numsamples = num_samples;
 
     if (!(idata = (int32_t *)malloc (msr->numsamples * sizeof (int32_t))))
     {
@@ -115,7 +120,7 @@ pack_miniseed (void *data, const char *station_id,
   }
   else
   {
-    msr->numsamples  = num_samples;
+    msr->numsamples = num_samples;
 
     if (!(idata = (int32_t *)malloc (msr->numsamples * sizeof (int32_t))))
     {
@@ -143,7 +148,7 @@ pack_miniseed (void *data, const char *station_id,
   }
 
   /* Clean up */
-  if (msr->datasamples == data)
+  /*if (msr->datasamples == data)
     msr->datasamples = NULL;
   msr3_free (&msr);
   if(cdata != NULL)
@@ -153,7 +158,7 @@ pack_miniseed (void *data, const char *station_id,
   if(ddata != NULL)
       free(ddata);
   if(idata != NULL)
-      free(idata);
+      free(idata);*/
 
   return 0;
 }
