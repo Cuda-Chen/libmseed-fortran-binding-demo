@@ -3,6 +3,8 @@
 
 #include "libmseed.h"
 
+#include "pack_mseed.h"
+
 static void
 print_stderr (const char *message)
 {
@@ -140,6 +142,8 @@ pack_miniseed (void *data, const char *station_id,
   msr->samplecnt = msr->numsamples;
 
   flags |= MSF_FLUSHDATA;
+  /* Mini SEED 2.x caompatibility */
+  flags |= MSF_PACKVER2;
 
   rv = msr3_writemseed (msr, outfile, 1, flags, verbose);
   if (rv < 0)
@@ -161,4 +165,19 @@ pack_miniseed (void *data, const char *station_id,
       free(idata);*/
 
   return 0;
+}
+
+/* For Fortran binding */
+int
+pack_miniseed_integer_ (void *data, const char *station_id,
+                        int *record_length, uint8_t *encoding,
+                        int *byteorder, uint8_t *pubversion,
+                        const char *starttime, double *sampling_rate,
+                        int *num_samples, const char *outfile)
+{
+  return pack_miniseed (data, station_id,
+                        *record_length, *encoding,
+                        *byteorder, *pubversion,
+                        starttime, *sampling_rate,
+                        *num_samples, outfile);
 }
