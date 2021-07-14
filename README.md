@@ -1,5 +1,5 @@
 # libmseed-fortran-binding-demo
-Fortran biding to libmseed demo.
+Fortran binding to libmseed demo.
 
 ## Fortran linking
  gfortran -std=legacy -g -ffixed-line-length-128 f2ms.f pack_mseed.o -L/usr/lobal/ -lmseed -o f2ms
