@@ -168,8 +168,9 @@ pack_miniseed (void *data, const char *station_id,
 }
 
 /* For Fortran binding */
+/* Accept generic type array */
 int
-pack_miniseed_integer_ (void *data, const char *station_id,
+pack_miniseed_generic_ (void *data, const char *station_id,
                         int *record_length, uint8_t *encoding,
                         int *byteorder, uint8_t *pubversion,
                         const char *starttime, double *sampling_rate,
@@ -180,4 +181,38 @@ pack_miniseed_integer_ (void *data, const char *station_id,
                         *byteorder, *pubversion,
                         starttime, *sampling_rate,
                         *num_samples, outfile);
+}
+
+/* Accept only integer type array */
+int
+pack_miniseed_integer_ (void *data, const char *station_id,
+                        int *record_length, uint8_t *pubversion,
+                        const char *starttime, double *sampling_rate,
+                        int *num_samples, const char *outfile)
+{
+  uint8_t encoding = 3;
+  int byteorder    = 1;
+
+  return pack_miniseed_generic_ (data, station_id,
+                                 record_length, &encoding,
+                                 &byteorder, pubversion,
+                                 starttime, sampling_rate,
+                                 num_samples, outfile);
+}
+
+/* Accept onlye real type array */
+int
+pack_miniseed_real_ (void *data, const char *station_id,
+                     int *record_length, uint8_t *pubversion,
+                     const char *starttime, double *sampling_rate,
+                     int *num_samples, const char *outfile)
+{
+  uint8_t encoding = 4;
+  int byteorder    = 1;
+
+  return pack_miniseed_generic_ (data, station_id,
+                                 record_length, &encoding,
+                                 &byteorder, pubversion,
+                                 starttime, sampling_rate,
+                                 num_samples, outfile);
 }
